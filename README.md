@@ -139,4 +139,4 @@ php artisan serve
 ## 👨‍💻 Autor
 
 Prueba técnica – Backend Laravel para app móvil.
-Julio Villalobos 
+#Julio Villalobos 
