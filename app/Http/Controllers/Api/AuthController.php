@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Models\Company;
 use App\Models\User;
@@ -29,13 +30,12 @@ class AuthController extends Controller
             ->first();
 
         if (!$user || !Hash::check($request->password, $user->password)) {
-            return response()->json(['message' => 'Credenciales incorrectas'], 401);
+            return ApiResponse::error('AUTH_INVALID_CREDENTIALS', null, 401);
         }
 
         $token = $user->createToken('mobile')->plainTextToken;
 
-        return response()->json([
-            'message' => 'Login exitoso',
+        return ApiResponse::success('AUTH_LOGIN_SUCCESS', [
             'token' => $token,
             'user' => [
                 'id' => $user->id,
@@ -66,10 +66,9 @@ class AuthController extends Controller
 
         $company = Company::where('code', $request->company_code)->first();
 
-        // opcional: email único por empresa (si lo necesitas)
         $exists = User::where('company_id', $company->id)->where('email', $request->email)->exists();
         if ($exists) {
-            return response()->json(['message' => 'El email ya existe en esta empresa'], 422);
+            return ApiResponse::error('AUTH_EMAIL_ALREADY_EXISTS', null, 422);
         }
 
         $user = User::create([
@@ -81,8 +80,7 @@ class AuthController extends Controller
 
         $token = $user->createToken('mobile')->plainTextToken;
 
-        return response()->json([
-            'message' => 'Registro exitoso',
+        return ApiResponse::success('AUTH_REGISTER_SUCCESS', [
             'token' => $token,
             'user' => [
                 'id' => $user->id,
@@ -105,7 +103,7 @@ class AuthController extends Controller
         $request->user()->currentAccessToken()->delete();
 
         return response()->json([
-            'message' => 'Sesión cerrada correctamente'
+            'code' => 'AUTH_LOGOUT_SUCCESS'
         ]);
     }
 }

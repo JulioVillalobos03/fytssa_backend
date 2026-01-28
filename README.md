@@ -1,59 +1,142 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 📱 FYTSSA – Backend API (Laravel)
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Backend API desarrollada en **Laravel 12** para una aplicación móvil (**React Native + Expo**), enfocada en **autenticación multi-empresa**, gestión de usuarios y perfil, utilizando **tokens de acceso** con **Laravel Sanctum**.
 
-## About Laravel
+Este proyecto fue construido como **prueba técnica**, priorizando buenas prácticas, claridad en el diseño de API y preparación para un entorno móvil real.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 🚀 Stack Tecnológico
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- **PHP 8.2**
+- **Laravel 12**
+- **MySQL**
+- **Laravel Sanctum (API Tokens)**
+- **REST API**
+- **Storage local para imágenes**
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+## 🧠 Decisiones Técnicas Clave
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### 🔐 Autenticación con Sanctum
+Se implementó autenticación basada en **tokens Bearer**, ideal para aplicaciones móviles.  
+No se utilizan sesiones ni cookies.
 
-## Laravel Sponsors
+### 🏢 Multi-empresa
+Cada usuario pertenece a una empresa (`company_id`).  
+El **login y registro** requieren un `company_code`, permitiendo separar usuarios por organización.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### 👤 Perfil autenticado
+El perfil se obtiene desde `/profile/me`, usando el usuario autenticado por token, sin exponer IDs en la URL.
 
-### Premium Partners
+### 🖼️ Subida de avatar
+Se permite subir imagen de perfil mediante `multipart/form-data`, almacenada en `storage/app/public` y expuesta vía `php artisan storage:link`.
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+---
 
-## Contributing
+## 📂 Estructura del Proyecto
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```
+app/
+├── Http/
+│   └── Controllers/
+│       └── Api/
+│           ├── AuthController.php
+│           ├── CompanyController.php
+│           └── ProfileController.php
+├── Models/
+│   ├── User.php
+│   └── Company.php
+routes/
+└── api.php
+database/
+├── migrations/
+└── seeders/
+```
 
-## Code of Conduct
+---
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## 🔑 Endpoints Principales
 
-## Security Vulnerabilities
+### 🏢 Empresas
+```http
+GET /api/companies
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+---
 
-## License
+### 🔐 Registro
+```http
+POST /api/auth/register
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+**Body (JSON):**
+```json
+{
+  "company_code": "empresa1",
+  "name": "Nuevo Usuario",
+  "email": "nuevo@empresa1.com",
+  "password": "123456",
+  "password_confirmation": "123456"
+}
+```
+
+---
+
+### 🔓 Login
+```http
+POST /api/auth/login
+```
+
+**Body (JSON):**
+```json
+{
+  "company_code": "empresa1",
+  "email": "nuevo@empresa1.com",
+  "password": "123456"
+}
+```
+
+---
+
+### 🚪 Logout
+```http
+POST /api/auth/logout
+```
+
+---
+
+### 👤 Perfil del usuario autenticado
+```http
+GET /api/profile/me
+POST /api/profile/me
+```
+
+---
+
+## 🗄️ Base de Datos
+
+### Tablas principales
+- **companies**
+- **users**
+- **personal_access_tokens**
+
+---
+
+## ⚙️ Instalación Local
+
+```bash
+composer install
+php artisan key:generate
+php artisan migrate --seed
+php artisan storage:link
+php artisan serve
+```
+
+---
+
+## 👨‍💻 Autor
+
+Prueba técnica – Backend Laravel para app móvil.
+Julio Villalobos 

@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -12,9 +12,11 @@ class ProfileController extends Controller
     /**
      * Obtener perfil del usuario
      */
-    public function show(User $user)
+    public function me(Request $request)
     {
-        return response()->json([
+        $user = $request->user();
+
+        return ApiResponse::success('PROFILE_ME_SUCCESS', [
             'data' => [
                 'id' => $user->id,
                 'name' => $user->name,
@@ -31,15 +33,18 @@ class ProfileController extends Controller
         ]);
     }
 
+
     /**
      * Actualizar perfil del usuario
      */
-    public function update(Request $request, User $user)
+    public function updateMe(Request $request)
     {
+        $user = $request->user();
+
         $request->validate([
-            'name' => 'required|string',
+            'name' => 'required|string|min:3',
             'email' => 'required|email',
-            'avatar' => 'nullable|image|max:2048'
+            'avatar' => 'nullable|image|max:2048',
         ]);
 
         $user->name = $request->name;
@@ -56,8 +61,7 @@ class ProfileController extends Controller
 
         $user->save();
 
-        return response()->json([
-            'message' => 'Perfil actualizado correctamente',
+        return ApiResponse::success('PROFILE_UPDATE_ME_SUCCESS', [
             'data' => [
                 'id' => $user->id,
                 'name' => $user->name,
