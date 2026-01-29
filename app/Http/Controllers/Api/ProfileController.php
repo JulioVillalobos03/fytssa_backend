@@ -22,7 +22,7 @@ class ProfileController extends Controller
                 'name' => $user->name,
                 'email' => $user->email,
                 'avatar' => $user->avatar
-                    ? url('storage/' . $user->avatar)
+                    ? asset('storage/' . $user->avatar)
                     : null,
                 'company' => [
                     'code' => $user->company->code,
@@ -67,7 +67,7 @@ class ProfileController extends Controller
                 'name' => $user->name,
                 'email' => $user->email,
                 'avatar' => $user->avatar
-                    ? url('storage/' . $user->avatar)
+                    ? asset('storage/' . $user->avatar)
                     : null,
             ]
         ]);
